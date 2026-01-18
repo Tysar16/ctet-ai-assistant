@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CTET तैयारी सहायक</title>
+
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f2f6ff;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: #3f51b5;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      padding: 15px;
+    }
+
+    .chat-box {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      min-height: 300px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      overflow-y: auto;
+    }
+
+    .bot {
+      background: #e8ebff;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    .user {
+      background: #d1ffd6;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      text-align: right;
+      font-size: 18px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 70px;
+      margin-top: 10px;
+      font-size: 18px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px;
+      font-size: 18px;
+      background: #3f51b5;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #2c3ea8;
+    }
+
+    .quick-buttons button {
+      background: #ff9800;
+      margin-top: 8px;
+    }
+
+    .quick-buttons button:hover {
+      background: #e68900;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 14px;
+      margin-top: 15px;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  📘 CTET तैयारी सहायक
+</header>
+
+<div class="container">
+
+  <div class="chat-box" id="chatBox">
+    <div class="bot">
+      नमस्ते 🙏<br>
+      मैं आपकी CTET तैयारी में मदद करूँगी।  
+      आप कोई भी सवाल सरल हिंदी में पूछ सकती हैं।
+    </div>
+  </div>
+
+  <textarea id="question" placeholder="यहाँ अपना सवाल लिखें..."></textarea>
+
+  <button onclick="startVoice()">🎤 बोलकर पूछें</button>
+
+  <button onclick="askAI()">पूछें</button>
+
+  <div class="quick-buttons">
+    <button onclick="quickAsk('आज का CTET प्रश्न दीजिए')">📅 आज का प्रश्न</button>
+    <button onclick="quickAsk('बाल विकास से 5 MCQ दीजिए')">📝 MCQ अभ्यास</button>
+    <button onclick="quickAsk('बहुत आसान भाषा में समझाइए')">😊 आसान भाषा</button>
+  </div>
+
+  <footer>
+    Made with ❤️ for CTET aspirants
+  </footer>
+
+</div>
+
+<script>
+  async function askAI() {
+    const question = document.getElementById("question").value;
+    if (!question) return;
+
+    const chatBox = document.getElementById("chatBox");
+
+    chatBox.innerHTML += `<div class="user">${question}</div>`;
+    document.getElementById("question").value = "";
+
+    chatBox.innerHTML += `<div class="bot">⏳ सोच रही हूँ...</div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    const res = await fetch("http://localhost:3000/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question })
+    });
+
+    const data = await res.json();
+    chatBox.lastChild.innerHTML = data.answer || data.error;
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function quickAsk(text) {
+    document.getElementById("question").value = text;
+    askAI();
+  }
+   function startVoice() {
+    if (!('webkitSpeechRecognition' in window)) {
+      alert("आपका ब्राउज़र voice support नहीं करता");
+      return;
+    }
+
+    const recognition = new webkitSpeechRecognition();
+    recognition.lang = "hi-IN";
+    recognition.start();
+
+    recognition.onresult = function(event) {
+      const text = event.results[0][0].transcript;
+      document.getElementById("question").value = text;
+    };
+  }
+</script>
+
+</body>
+</html>
