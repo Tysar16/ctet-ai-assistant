@@ -146,7 +146,7 @@
     chatBox.innerHTML += `<div class="bot">⏳ सोच रही हूँ...</div>`;
     chatBox.scrollTop = chatBox.scrollHeight;
 
-    const res = await fetch("http://localhost:3000/ask", {
+    const res = await fetch("https://ctet-ai-assistant.onrender.com/ask", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question })
